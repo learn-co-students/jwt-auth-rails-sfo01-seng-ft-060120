@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
-  before_action :authorized
+  //before_action :authorized
+  skip_before_action :authorized, only: [:create]
 
   def encode_token(payload) #{ user_id: 2 }
     JWT.encode(payload, 'my_s3cr3t') #issue a token, store payload in token
@@ -36,5 +37,12 @@ class ApplicationController < ActionController::API
 
   def authorized
     render json: { message: 'Please log in' }, status: :unauthorized unless logged_in?
+  end
+
+  private
+ 
+  def user_login_params
+    # params { user: {username: 'Chandler Bing', password: 'hi' } }
+    params.require(:user).permit(:username, :password)
   end
 end
